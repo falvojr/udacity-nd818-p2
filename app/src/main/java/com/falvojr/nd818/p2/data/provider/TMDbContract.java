@@ -16,8 +16,14 @@ public class TMDbContract {
 
     public static final class TMDbEntry implements BaseColumns {
 
+        public static final Integer FALSE = 0;
+        public static final Integer TRUE = 1;
+
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_TM_DB).build();
+
         public static final String COLUMN_MOVIE_ID = "movie_id";
+        public static final String COLUMN_ORIGINAL_TITLE = "original_title";
+        public static final String COLUMN_POSTER_PATH = "poster_path";
         public static final String COLUMN_FAVORITE = "favorite";
 
         static final String TABLE_NAME = "movie";

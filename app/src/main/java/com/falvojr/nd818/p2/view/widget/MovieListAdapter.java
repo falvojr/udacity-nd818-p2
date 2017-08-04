@@ -44,8 +44,9 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
         final Movie movie = mDataSet.get(position);
         if (mOnItemListener != null) {
             final ImageView imageView = holder.mBinding.ivMoviePoster;
-            mOnItemListener.onLoadPoster(imageView, movie.getPosterPath());
+            imageView.setContentDescription(movie.getOriginalTitle());
             imageView.setOnClickListener(v -> mOnItemListener.onClick(movie));
+            mOnItemListener.onLoadPoster(imageView, movie.getPosterPath());
         }
     }
 

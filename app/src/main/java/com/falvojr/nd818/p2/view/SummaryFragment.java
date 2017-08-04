@@ -68,7 +68,10 @@ public class SummaryFragment extends BaseFragment<MovieActivity> {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(movieDetails -> {
+                            movie.setReleaseDate(movieDetails.getReleaseDate());
                             movie.setDuration(movieDetails.getDuration());
+                            movie.setVoteAverage(movieDetails.getVoteAverage());
+                            movie.setOverview(movieDetails.getOverview());
                             this.fillSummary(movie);
                         }, error -> super.getBaseActivity().showError(R.string.msg_error_get_movie, error)
                         , () -> super.hideProgress(mBinding.clContent, mBinding.progress.clContent));

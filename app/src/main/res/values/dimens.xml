@@ -6,6 +6,9 @@
     <dimen name="app_bar_height">224dp</dimen>
     <dimen name="bottom_nav_height">56dp</dimen>
     <dimen name="button_height">36dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_elevation">8dp</dimen>
+    <dimen name="half_margin">8dp</dimen>
 
     <!-- Custom Dimens. -->
     <dimen name="fragment_margin">24dp</dimen>

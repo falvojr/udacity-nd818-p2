@@ -18,6 +18,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/activity_vertical_margin"
+                android:gravity="center_vertical"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toLeftOf="@+id/firstGuideline"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -27,6 +28,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/activity_vertical_margin"
+                android:gravity="center_vertical"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="@+id/firstGuideline"
                 app:layout_constraintRight_toLeftOf="@+id/secondGuideline"
@@ -37,6 +39,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/activity_vertical_margin"
+                android:gravity="center_vertical"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="@+id/secondGuideline"
                 app:layout_constraintRight_toRightOf="parent"
@@ -48,6 +51,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:gravity="center_vertical"
                 app:layout_constraintLeft_toLeftOf="@+id/tvReleaseDate"
                 app:layout_constraintRight_toRightOf="@+id/tvVoteAverage"
                 app:layout_constraintTop_toBottomOf="@+id/tvDuration" />

@@ -21,8 +21,6 @@ public class MovieActivity extends BaseActivity implements BottomNavigationView.
 
     public static final String KEY_MOVIE = "MovieActivity.mMovie";
     private static final String KEY_NAV_SELECTED_ITEM = "MovieActivity.mNavSelectedItem";
-    public static final int FALSE = 0;
-    public static final int TRUE = 1;
 
     private Movie mMovie;
     private ActivityMovieBinding mBinding;
@@ -104,7 +102,9 @@ public class MovieActivity extends BaseActivity implements BottomNavigationView.
             // Defines an object to contain the new values to insert
             final ContentValues mNewValues = new ContentValues();
             mNewValues.put(TMDbEntry.COLUMN_MOVIE_ID, mMovie.getId());
-            mNewValues.put(TMDbEntry.COLUMN_FAVORITE, this.isFavorite() ? FALSE : TRUE);
+            mNewValues.put(TMDbEntry.COLUMN_ORIGINAL_TITLE, mMovie.getOriginalTitle());
+            mNewValues.put(TMDbEntry.COLUMN_POSTER_PATH, mMovie.getPosterPath());
+            mNewValues.put(TMDbEntry.COLUMN_FAVORITE, this.isFavorite() ? TMDbEntry.FALSE : TMDbEntry.TRUE);
 
             super.getContentResolver().insert(TMDbEntry.CONTENT_URI, mNewValues);
 
@@ -138,9 +138,9 @@ public class MovieActivity extends BaseActivity implements BottomNavigationView.
 
         boolean isFavorite = false;
         if (cursor != null) {
-            final int indexFavorite = cursor.getColumnIndex(TMDbEntry.COLUMN_FAVORITE);
+            final int idxFavorite = cursor.getColumnIndex(TMDbEntry.COLUMN_FAVORITE);
             while (cursor.moveToNext()) {
-                isFavorite = cursor.getInt(indexFavorite) == TRUE;
+                isFavorite = cursor.getInt(idxFavorite) == TMDbEntry.TRUE;
             }
             cursor.close();
         }

@@ -13,7 +13,7 @@ public class TMDbDbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "tmdb.db";
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public TMDbDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -25,6 +25,8 @@ public class TMDbDbHelper extends SQLiteOpenHelper {
                 "CREATE TABLE " + TMDbEntry.TABLE_NAME + " (" +
                         TMDbEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         TMDbEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL," +
+                        TMDbEntry.COLUMN_ORIGINAL_TITLE + " TEXT NOT NULL," +
+                        TMDbEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL," +
                         TMDbEntry.COLUMN_FAVORITE + " INTEGER DEFAULT 0," +
                         "UNIQUE (" + TMDbEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";
         sqLiteDatabase.execSQL(SQL_CREATE_WEATHER_TABLE);

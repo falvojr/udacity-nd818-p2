@@ -1,6 +1,7 @@
 package com.falvojr.nd818.p2.view;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,14 +12,18 @@ import android.widget.ImageView;
 import com.falvojr.nd818.p2.R;
 import com.falvojr.nd818.p2.data.http.TMDbService;
 import com.falvojr.nd818.p2.data.prefs.TMDbPreferences;
+import com.falvojr.nd818.p2.data.provider.TMDbContract;
 import com.falvojr.nd818.p2.databinding.ActivityMainBinding;
 import com.falvojr.nd818.p2.model.Movie;
+import com.falvojr.nd818.p2.model.MovieSort;
 import com.falvojr.nd818.p2.model.Results;
 import com.falvojr.nd818.p2.view.base.BaseActivity;
 import com.falvojr.nd818.p2.view.widget.MovieListAdapter;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -45,6 +50,8 @@ public class MovieListActivity extends BaseActivity {
         if (mAdapter == null) {
             this.createAdapter();
             this.loadConfigImages();
+        } else if (MovieSort.FAVORITE.equals(TMDbPreferences.getInstance().getSort(this))) {
+            this.loadConfigImages();
         }
         mBinding.rvMovies.setLayoutManager(this.getGridLayoutByLandAndSw600dpRes());
     }
@@ -69,10 +76,15 @@ public class MovieListActivity extends BaseActivity {
 
     private void loadMovies() {
         final Observable<Results<Movie>> call;
-        if (this.isPopularSort()) {
-            call = TMDbService.getInstance().getApi().getPopularMovies(super.getApiKey());
+        final String storedSort = TMDbPreferences.getInstance().getSort(this);
+        if (MovieSort.FAVORITE.equals(storedSort)) {
+            call = Observable.just(this.getFavoriteMoviesOffline());
         } else {
-            call = TMDbService.getInstance().getApi().getTopRatedMovies(super.getApiKey());
+            if (MovieSort.POPULAR.equals(storedSort)) {
+                call = TMDbService.getInstance().getApi().getPopularMovies(super.getApiKey());
+            } else {
+                call = TMDbService.getInstance().getApi().getTopRatedMovies(super.getApiKey());
+            }
         }
         call.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -111,14 +123,11 @@ public class MovieListActivity extends BaseActivity {
         return new GridLayoutManager(this, factor * columns);
     }
 
-    private boolean isPopularSort() {
-        return Movie.Sort.POPULAR.name().equals(TMDbPreferences.getInstance().getSort(this));
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.getMenuInflater().inflate(R.menu.main, menu);
-        final int id = this.isPopularSort() ? R.id.mPopular : R.id.mTopRated;
+        final String storedSort = TMDbPreferences.getInstance().getSort(this);
+        final int id = MovieSort.POPULAR.equals(storedSort) ? R.id.mPopular : MovieSort.TOP_RATED.equals(storedSort) ? R.id.mTopRated : R.id.mFavorite;
         menu.findItem(id).setChecked(true);
         return true;
     }
@@ -127,10 +136,13 @@ public class MovieListActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.mPopular:
-                TMDbPreferences.getInstance().putSort(this, Movie.Sort.POPULAR);
+                TMDbPreferences.getInstance().putSort(this, MovieSort.POPULAR);
                 break;
             case R.id.mTopRated:
-                TMDbPreferences.getInstance().putSort(this, Movie.Sort.TOP_RATED);
+                TMDbPreferences.getInstance().putSort(this, MovieSort.TOP_RATED);
+                break;
+            case R.id.mFavorite:
+                TMDbPreferences.getInstance().putSort(this, MovieSort.FAVORITE);
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -138,5 +150,46 @@ public class MovieListActivity extends BaseActivity {
         this.loadConfigImages();
         item.setChecked(!item.isChecked());
         return true;
+    }
+
+    private Results<Movie> getFavoriteMoviesOffline() {
+        // A "projection" defines the columns that will be returned for each row
+        final String[] projection = {
+                TMDbContract.TMDbEntry._ID,
+                TMDbContract.TMDbEntry.COLUMN_MOVIE_ID,
+                TMDbContract.TMDbEntry.COLUMN_ORIGINAL_TITLE,
+                TMDbContract.TMDbEntry.COLUMN_POSTER_PATH
+        };
+        // Defines a string to contain the selection clause
+        final String selectionClause = TMDbContract.TMDbEntry.COLUMN_FAVORITE + " = ?";
+        // Initializes an array to contain selection arguments
+        final String[] selectionArgs = { TMDbContract.TMDbEntry.TRUE.toString() };
+        // Defines a string to contain the sort order
+        final String sortOrder = "";
+
+        // Queries the user dictionary and returns results
+        final Cursor cursor = getContentResolver().query(
+                TMDbContract.TMDbEntry.CONTENT_URI,  // The content URI of the movies table
+                projection,            // The columns to return for each row
+                selectionClause,       // Selection criteria
+                selectionArgs,         // Selection criteria
+                sortOrder);            // The sort order for the returned rows
+
+        final Results<Movie> results = new Results<>();
+        results.setData(new ArrayList<>());
+        if (cursor != null) {
+            final int idxId = cursor.getColumnIndex(TMDbContract.TMDbEntry.COLUMN_MOVIE_ID);
+            final int idxOriginalTitle = cursor.getColumnIndex(TMDbContract.TMDbEntry.COLUMN_ORIGINAL_TITLE);
+            final int idxPosterPath = cursor.getColumnIndex(TMDbContract.TMDbEntry.COLUMN_POSTER_PATH);
+            while (cursor.moveToNext()) {
+                final Movie movie = new Movie();
+                movie.setId(cursor.getLong(idxId));
+                movie.setOriginalTitle(cursor.getString(idxOriginalTitle));
+                movie.setPosterPath(cursor.getString(idxPosterPath));
+                results.getData().add(movie);
+            }
+            cursor.close();
+        }
+        return results;
     }
 }

@@ -15,11 +15,6 @@ import java.util.List;
  */
 public class Movie implements Parcelable {
 
-    public enum Sort {
-        POPULAR,
-        TOP_RATED
-    }
-
     @SerializedName("id")
     private Long id;
 

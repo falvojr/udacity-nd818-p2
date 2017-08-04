@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.falvojr.nd818.p2.model.Movie;
+import com.falvojr.nd818.p2.model.MovieSort;
 
 public class TMDbPreferences {
     private static final String KEY_IMAGES_BASE_URL = "images-base-url";
@@ -20,14 +21,14 @@ public class TMDbPreferences {
         return sp.getString(KEY_IMAGES_BASE_URL, "");
     }
 
-    public void putSort(Context context, Movie.Sort sort) {
+    public void putSort(Context context, String sort) {
         final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        sp.edit().putString(KEY_SORT, sort.name()).apply();
+        sp.edit().putString(KEY_SORT, sort).apply();
     }
 
     public String getSort(Context context) {
         final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        return sp.getString(KEY_SORT, Movie.Sort.POPULAR.name());
+        return sp.getString(KEY_SORT, MovieSort.POPULAR);
     }
 
     /**
